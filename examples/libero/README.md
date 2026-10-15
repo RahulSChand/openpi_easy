@@ -61,6 +61,27 @@ Terminal window 2:
 uv run scripts/serve_policy.py --env LIBERO
 ```
 
+## Privileged deterministic recovery smoke test
+
+`deterministic_c_smoke.py` checks whether a deterministic controller can serve
+as policy C for recoverable failures. It currently targets LIBERO-Object task 0,
+uses simulator state to locate the object and target, and runs a closed-loop OSC
+pick-and-place recovery. It does not use images or a learned policy.
+
+Run it from the repository root in a Python 3.8 LIBERO environment:
+
+```bash
+export PYTHONPATH="$PWD/third_party/libero${PYTHONPATH:+:$PYTHONPATH}"
+MUJOCO_GL=osmesa PYOPENGL_PLATFORM=osmesa \
+  python examples/libero/deterministic_c_smoke.py --episodes 3
+```
+
+Each episode starts from an official LIBERO initial state, moves the task object
+to a known failure state, restores that exact state, and asks the controller to
+recover. The default output directory is `data/libero/deterministic_c_smoke`;
+each `.npz` contains the failure state, recovery states, and recovery actions,
+and `summary.json` records stage completion and task success.
+
 ## Results
 
 If you want to reproduce the following numbers, you can evaluate the checkpoint at `gs://openpi-assets/checkpoints/pi05_libero/`. This
